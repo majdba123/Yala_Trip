@@ -3,7 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\User;
+use App\Models\Comp_trip;
+
 return new class extends Migration
 {
     /**
@@ -11,12 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('padding');
+        Schema::table('tickts', function (Blueprint $table) {
+            $table->foreignIdFor(Comp_trip::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
-            $table->timestamps();
         });
     }
 
@@ -25,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickts');
+        Schema::table('tickts', function (Blueprint $table) {
+            //
+        });
     }
 };

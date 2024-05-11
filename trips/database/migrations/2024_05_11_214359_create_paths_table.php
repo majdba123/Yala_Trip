@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('paths', function (Blueprint $table) {
             $table->id();
+            $table->string('from')->default('nul');
+            $table->string('to')->default('nul');
+            $table->string('city')->default('nul');
+            $table->string('price')->default('nul');
             $table->timestamps();
         });
     }

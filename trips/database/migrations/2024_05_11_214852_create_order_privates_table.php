@@ -3,7 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
+use App\Models\Driver;
+use App\Models\Private_trip;
 return new class extends Migration
 {
     /**
@@ -13,6 +14,12 @@ return new class extends Migration
     {
         Schema::create('order_privates', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Driver::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignIdFor(Private_trip::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('status')->default('padding');
+            $table->string('price');
+
+
             $table->timestamps();
         });
     }
