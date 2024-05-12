@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Contuct_us extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'comment',
+        'email',
+        'status'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
 }

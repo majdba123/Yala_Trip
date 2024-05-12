@@ -21,6 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'point',
+        'type',
+        'lat',
+        'lang'
     ];
 
     /**
@@ -42,4 +47,44 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function Reservation()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+    public function Driver()
+    {
+        return $this->hasOne(Driver::class);
+    }
+    public function Private_trip()
+    {
+        return $this->hasMany(Private_trip::class);
+    }
+    public function Rate_comapny()
+    {
+        return $this->hasMany(Rate_comapny::class);
+    }
+    public function Charge_balance()
+    {
+        return $this->hasMany(Charge_balance::class);
+    }
+    public function Contuct_us()
+    {
+        return $this->hasMany(Contuct_us::class);
+    }
+    public function Subscriptions()
+    {
+        return $this->hasMany(Subscriptions::class);
+    }
+    public function Company()
+    {
+        return $this->hasOne(Company::class);
+    }
+    public function Rating()
+    {
+        return $this->hasMany(Rating::class);
+    }
+    public function Tickt()
+    {
+        return $this->hasMany(Tickt::class);
+    }
 }
