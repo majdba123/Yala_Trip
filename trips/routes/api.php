@@ -2,8 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserApiController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserApiController;
+use App\Http\Controllers\DriverController;
+use App\Http\Controllers\PathController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,3 +24,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('register',[UserApiController::class,'register']);
 Route::post('login',[UserApiController::class,'login']);
 Route::post('logout',[UserApiController::class,'logout'])->middleware('auth:sanctum');
+Route::post('register/driver',[DriverController::class,'register']);
+
+
+
+
+Route::group(['prefix' => 'driver' , 'middleware' => ['driv']], function () {
+
+
+});
+
+
+
+
+Route::group(['prefix' => 'admin' , 'middleware' => ['checkAdmi','auth:sanctum']], function () {
+
+    Route::get('/all_path', [PathController::class, 'index']);
+    Route::post('/path_store', [PathController::class, 'store']);
+    Route::put('/path_update/{id}', [PathController::class, 'update']);
+    Route::delete('/path_delete/{id}', [PathController::class, 'destroy']);
+
+
+});
