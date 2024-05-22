@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tickts', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('padding');
+            $table->string('status')->default('panding');
             $table->string('price');
 
             $table->timestamps();

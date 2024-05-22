@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Reservation;
+
 
 
 
@@ -55,9 +57,42 @@ class DriverController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Driver $driver)
+
+
+    public function check_QR(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'price' => 'required|integer',
+            'trip_id' => 'required|integer|exists:trips,id',
+            'id' => 'required|integer|exists:reservations,id',
+            'user_id' => 'required|integer|exists:users,id',
+            'num_passenger' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+
+
+        // Get the reservation ID from the request
+        $id = $request->input('id');
+
+        // Retrieve the reservation by its ID
+        $reservation = Reservation::findOrFail($id);
+
+        // Check if the reservation exists and the user making the request is the owner
+        if ($reservation) {
+            // Update the reservation status to 'complete'
+            $reservation->status = 'complete';
+            $reservation->save();
+
+            // Return a JSON response indicating success
+            return response()->json(['message' => 'Reservation status updated to complete']);
+        } else {
+            // Return a JSON response indicating failure
+            return response()->json(['message' => 'Reservation not found '], 404);
+        }
     }
 
     /**

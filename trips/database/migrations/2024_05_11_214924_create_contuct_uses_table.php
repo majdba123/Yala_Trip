@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('comment');
             $table->string('email');
-            $table->string('status')->default('padding');
+            $table->string('status')->default('panding');
 
             $table->timestamps();
         });

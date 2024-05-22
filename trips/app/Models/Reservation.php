@@ -12,6 +12,8 @@ class Reservation extends Model
         'user_id',
         'trip_id',
         'status',
+        'price',
+        'num_passenger',
 
     ];
 

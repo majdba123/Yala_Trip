@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('charge_balances', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('padding');
+            $table->string('status')->default('panding');
             $table->string('balance');
             $table->string('imge')->default('null');
             $table->timestamps();

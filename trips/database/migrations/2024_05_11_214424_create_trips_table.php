@@ -17,8 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(Path::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(Driver::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('num_passenger');
-            $table->string('status')->default('padding');
-            $table->string('price');
+            $table->string('status')->default('pandding');
 
             $table->timestamps();
         });

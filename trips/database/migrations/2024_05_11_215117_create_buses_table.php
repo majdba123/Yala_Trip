@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('number');
             $table->string('num_passenger');
-            $table->string('status')->default('padding');
+            $table->string('status')->default('panding');
             $table->timestamps();
         });
     }

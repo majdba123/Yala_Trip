@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('private_trips', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('padding');
+            $table->string('status')->default('panding');
             $table->string('from');
             $table->string('to');
             $table->string('date');

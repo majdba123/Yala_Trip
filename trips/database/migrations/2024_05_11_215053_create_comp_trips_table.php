@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('start_time');
             $table->string('end_time');
             $table->string('price');
-            $table->string('status')->default('padding');
+            $table->string('status')->default('panding');
             $table->timestamps();
         });
     }
