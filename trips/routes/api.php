@@ -48,6 +48,7 @@ Route::group(['prefix' => 'driver' , 'middleware' => ['driv','auth:sanctum']], f
 
 
     Route::post('/QR_reservation', [DriverController::class, 'check_QR']);
+    Route::post('/out_resevation/{id}', [DriverController::class, 'out_reservation']);
 
 });
 

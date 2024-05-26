@@ -11,6 +11,7 @@ class Reservation extends Model
     protected $fillable = [
         'user_id',
         'trip_id',
+        'break_id',
         'status',
         'price',
         'num_passenger',
@@ -24,5 +25,10 @@ class Reservation extends Model
     public function Trip()
     {
         return $this->belongsTo(Trip::class,'trip_id');
+    }
+
+    public function break()
+    {
+        return $this->belongsTo(breaking::class,'break_id');
     }
 }

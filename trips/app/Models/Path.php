@@ -18,4 +18,8 @@ class Path extends Model
     {
         return $this->hasMany(Trip::class);
     }
+    public function Breaking()
+    {
+        return $this->hasMany(breaking::class);
+    }
 }

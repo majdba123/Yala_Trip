@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Trip;
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -59,7 +59,7 @@ class DriverController extends Controller
      */
 
 
-    public function check_QR(Request $request)
+    public function check_QR_COM(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'price' => 'required|integer',
@@ -95,12 +95,45 @@ class DriverController extends Controller
         }
     }
 
+
+
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Driver $driver)
+    public function out_reservation($id)
     {
-        //
+        $reservation = Reservation::findOrFail($id);
+
+        if ($reservation) {
+
+            $reservation->status = 'out';
+            $reservation->save();
+
+            $trip_id= $reservation->$trip_id;
+
+            $trip= Trip::findOrfail($trip_id);
+
+            $reservationn_fineshed_out = Reservation::where('trip_id', $trip_id)
+            ->where('status', '!complete and !pending')
+            ->sum('num_passenger');
+
+            $reservationn_complete_pending = Reservation::where('trip_id', $trip_id)
+            ->where('status', '!finished and !out')
+            ->sum('num_passenger');
+
+            if ($reservationn  > $trip->num_passenger) {
+                return response()->json([
+                    'message' => 'There are not enough seats available at this time',
+                ]);
+            }
+
+            return response()->json(['message' => 'Reservation status updated to out']);
+        } else {
+            // Return a JSON response indicating failure
+            return response()->json(['message' => 'Reservation not found '], 404);
+        }
+
+
     }
 
     /**

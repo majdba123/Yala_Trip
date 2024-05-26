@@ -36,4 +36,9 @@ class Trip extends Model
     {
         return $this->hasMany(Rating::class);
     }
+
+    public function breaking_Trip()
+    {
+        return $this->hasMany(breaking_Trip::class);
+    }
 }
