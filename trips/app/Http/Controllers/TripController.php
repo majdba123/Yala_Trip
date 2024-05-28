@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trip;
+use App\Models\breaking_Trip;
+use App\Models\breaking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +19,7 @@ class TripController extends Controller
     public function index_trip($id)
     {
         $trips = Trip::where('path_id', $id)
-            ->where('status', 'pandding')
+            ->where('status', 'panding')
             ->get();
         $tripData = [];
         foreach ($trips as $trip) {
@@ -30,7 +32,7 @@ class TripController extends Controller
             } else {
                 $remaining_passengers = $trip->num_passenger;
             }
-
+            $breaks = $trip->breaking_Trip;
             $data = [
                 'id' => $trip->id,
                 'from' => $trip->Path->from,
@@ -45,7 +47,14 @@ class TripController extends Controller
                 'num_passenger' => $trip->num_passenger,
                 'remaining_number_of_passengers' => $remaining_passengers ,
                 'status' => $trip->status,
-
+                'breaks' => $breaks->sortBy('break.sorted')->map(function($breakk) {
+                    return [
+                        'id' => $breakk->id,
+                        'sorted' => $breakk->break->sorted,
+                        'name' => $breakk->break->name,
+                        // add other break fields as needed
+                    ];
+                })->all()
             ];
             $tripData[] = $data;
         }
@@ -65,8 +74,6 @@ class TripController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the request data
-
         $validator = Validator::make($request->all(), [
             'path_id' => 'required|exists:paths,id',
             'num_passenger' => 'required|integer',
@@ -78,12 +85,13 @@ class TripController extends Controller
         $user = Auth::user();
         $driver=$user->Driver;
 
-        $existingTrip = Trip::where('path_id', $request->input('path_id'))
-        ->where('driver_id', $driver->id)
+        $existingTrip = Trip::where('driver_id', $driver->id)
+        ->where('status', ['pandding', 'complete'])
         ->first();
+
         if ($existingTrip) {
         // If a trip already exists, return an error message
-        return response()->json(['error' => 'A trip with the same path and driver already exists'], 409);
+        return response()->json(['error' => 'driver already panding'], 409);
         }
 
         $trip = new Trip();
@@ -91,6 +99,17 @@ class TripController extends Controller
         $trip->driver_id = $driver->id;
         $trip->num_passenger = $request->input('num_passenger');
         $trip->save();
+
+
+        $breakings = breaking::where('path_id', $request->input('path_id'))->get();
+
+        foreach ($breakings as $breaking) {
+            // Create a new BreakingTrip record for each breaking
+            $breakingTrip = new breaking_Trip();
+            $breakingTrip->trip_id = $trip->id;
+            $breakingTrip->breaking_id = $breaking->id;
+            $breakingTrip->save();
+        }
 
         return response()->json([
             'message' => 'trip Created ',

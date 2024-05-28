@@ -63,8 +63,24 @@ class ReservationController extends Controller
         $reservations = Reservation::where('user_id', $user->id)
                                    ->where('status', 'panding')
                                    ->get();
-        // Return the reservations as a JSON response
-        return response()->json($reservations);
+
+
+        $transformedReservations = $reservations->map(function ($reservation) {
+            return [
+                'id' => $reservation->id,
+                'trip_id' => $reservation->trip_id,
+                'user_name' => $reservation->user->name,
+                'from' => $reservation->Trip->Path->from,
+                'to' => $reservation->Trip->Path->to,
+                'price' => $reservation->price,
+                'num_passenger' => $reservation->num_passenger,
+                'status' => $reservation->status,
+                // add other reservation fields as needed
+            ];
+        });
+
+        return response()->json($transformedReservations);
+
     }
 
     /**
@@ -80,6 +96,7 @@ class ReservationController extends Controller
         $validator = Validator::make($request->all(), [
             'price' => 'required|integer',
             'num_passenger' => 'required|integer',
+            'break_id' => 'nullable|integer|exists:breakings,id'
         ]);
         if ($validator->fails()) {
             $errors = $validator->errors()->first();
@@ -120,6 +137,9 @@ class ReservationController extends Controller
         $booking = new Reservation();
         $booking->trip_id = $id;
         $booking->user_id = auth()->id();
+        if ($request->has('break_id')) {
+            $booking->breaking_id = $request->input('break_id');
+        }
         $booking->price = $total_price;
         $booking->num_passenger = $request->num_passenger;
         $booking->save();
@@ -144,6 +164,18 @@ class ReservationController extends Controller
         $driver->point += $total_price;
         $driver->save();
 
-        return response()->json($booking);
+        $data = [
+            'reserrvation_id' => $booking->id,
+            'trip_id' => $booking->trip_id,
+            'user' => $booking->user->name,
+            'num_passenger' =>  $booking->num_passenger,
+            'price' =>  $booking->price,
+            'status' =>  $booking->status ?: 'pending',
+        ];
+        if ($booking->breaking_id) {
+            $data['breaking_id'] = $booking->break->name;
+        }
+        $bookingData[] = $data;
+        return response()->json($bookingData);
     }
 }

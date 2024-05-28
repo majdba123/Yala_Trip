@@ -16,7 +16,7 @@ class user
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user() && Auth::user()->type == 0) {
+        if (Auth::user() && (Auth::user()->type == 0 || Auth::user()->type == 1)) {
 
             return $next($request);
         }
