@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Order_private;
 use App\Models\Reservation;
 
 
@@ -455,5 +456,35 @@ class DriverController extends Controller
         }
         // Return the JSON response
         return response()->json($response);
+    }
+    public function history_order_private_trip(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'sometimes|required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+        $user = Auth::user();
+        $driver = $user->Driver;
+        $order_privates = Order_private::where('driver_id', $driver->id)->where('status',  $request->input('status'))->get();
+
+        $response = [];
+        // Populate the array with the data from the trips collection
+        foreach ($order_privates as $order_private) {
+            $response[] = [
+                'id' => $order_private->id,
+                'driver' => $order_private->Driver->user->name,
+                'from' => $order_private->Private_trip->from,
+                'to' => $order_private->Private_trip->to,
+                'status' => $order_private->status,
+                'price' => $order_private->price,
+
+            ];
+        }
+        // Return the JSON response
+        return response()->json($response);
+
     }
 }

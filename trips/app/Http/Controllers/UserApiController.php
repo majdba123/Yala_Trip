@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Private_trip;
+use App\Models\Order_private;
 
 class UserApiController extends Controller
 {
@@ -126,5 +128,37 @@ class UserApiController extends Controller
         }
         $user->save();
         return response()->json(['message' => 'Profile updated successfully']);
+    }
+
+
+    public function history_order_private_trip(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'sometimes|required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+        $user = Auth::user();
+
+        $private_trips = $user->Private_trip()->where('status', $request->input('status'))->get();
+        $response = [];
+        // Populate the array with the data from the trips collection
+        foreach ($private_trips as $private_trip) {
+            $order_privates = $private_trip->Order_private()->where('status', $request->input('status'))->get();
+            foreach ($order_privates as $order_private) {
+                $response[] = [
+                    'id' => $order_private->id,
+                    'driver' => $order_private->Driver->user->name,
+                    'from' => $private_trip->from,
+                    'to' => $private_trip->to,
+                    'status' => $order_private->status,
+                    'price' => $order_private->price,
+                ];
+            }
+        }
+        // Return the JSON response
+        return response()->json($response);
     }
 }

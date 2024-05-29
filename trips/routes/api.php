@@ -12,6 +12,9 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\BreakingController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ChargeBalanceController;
+use App\Http\Controllers\PrivateTripController;
+use App\Http\Controllers\OrderPrivateController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -86,6 +89,12 @@ Route::group(['prefix' => 'driver' , 'middleware' => ['driv','auth:sanctum']], f
     Route::post('/update_profile', [DriverController::class, 'updateProfile']);
 
     Route::post('/history_trip', [DriverController::class, 'trip_history']);
+
+    Route::get('/display_private_trip', [PrivateTripController::class, 'driver_order']);
+    Route::post('/request_private_order/{id}', [OrderPrivateController::class, 'get_private_order_by_driver']);
+    Route::post('/finished_oder_private/{id}', [OrderPrivateController::class, 'finished_oder_private']);
+
+    Route::post('/history_order_private_trip', [DriverController::class, 'history_order_private_trip']);
 });
 
 
@@ -117,6 +126,18 @@ Route::group(['prefix' => 'user' , 'middleware' => ['use','auth:sanctum']], func
 
     Route::get('/get_info', [UserApiController::class, 'info']);
     Route::post('/update_profile', [UserApiController::class, 'updateProfile']);
+
+    Route::post('/book_private_trip', [PrivateTripController::class, 'store']);
+    Route::put('/book_private_trip_update/{id}', [PrivateTripController::class, 'update']);
+    Route::post('/book_private_trip_delete/{id}', [PrivateTripController::class, 'destroy']);
+
+    Route::get('/my_private_trip', [PrivateTripController::class, 'my_private_trip']);
+
+    Route::post('/get_order_private/{id}', [OrderPrivateController::class, 'get_order_private']);
+    Route::post('/accept_order_private/{id}', [OrderPrivateController::class, 'accept_order_private']);
+
+    Route::post('/history_order_private_trip', [UserApiController::class, 'history_order_private_trip']);
+
 
 });
 

@@ -10,7 +10,7 @@ class Order_private extends Model
     use HasFactory;
 
     protected $fillable = [
-        'private_trip',
+        'private_trip_id',
         'driver_id',
         'price',
         'status',
@@ -18,7 +18,7 @@ class Order_private extends Model
 
     public function Private_trip()
     {
-        return $this->belongsTo(Private_trip::class,'private_trip');
+        return $this->belongsTo(Private_trip::class,'private_trip_id');
     }
 
     public function Driver()
