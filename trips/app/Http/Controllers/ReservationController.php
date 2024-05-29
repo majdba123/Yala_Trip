@@ -55,20 +55,31 @@ class ReservationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function panding_reservation()
+    public function panding_reservation(Request $request)
     {
         // Get the authenticated user
         $user = auth()->user();
-        // Retrieve all reservations with a status of 'pending' for the user
-        $reservations = Reservation::where('user_id', $user->id)
-                                   ->where('status', 'panding')
-                                   ->get();
 
+        // Get the status parameter from the request
+        $status = $request->input('status');
+        // Define a list of valid status values
+        $validStatusValues = ['complete', 'out', 'finished', 'panding'];
+        // Check that the status parameter is valid
+        if (!in_array($status, $validStatusValues)) {
+            // Return an error response if the status parameter is invalid
+            return response()->json(['error' => 'Invalid status parameter'], 400);
+        }
+
+        // Retrieve all reservations with the specified status for the user
+        $reservations = Reservation::where('user_id', $user->id)
+                                   ->where('status', $status)
+                                   ->get();
 
         $transformedReservations = $reservations->map(function ($reservation) {
             return [
                 'id' => $reservation->id,
                 'trip_id' => $reservation->trip_id,
+                'break' => $reservation->break->name,
                 'user_name' => $reservation->user->name,
                 'from' => $reservation->Trip->Path->from,
                 'to' => $reservation->Trip->Path->to,
@@ -80,7 +91,6 @@ class ReservationController extends Controller
         });
 
         return response()->json($transformedReservations);
-
     }
 
     /**

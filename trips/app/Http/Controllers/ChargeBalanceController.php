@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Charge_balance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ChargeBalanceController extends Controller
 {
@@ -28,7 +30,29 @@ class ChargeBalanceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $imageName = Str::random(32).".".$request->imge->getClientOriginalExtension();
+            $user = auth()->user();
+            // Create Post
+            Charge_balance::create([
+                'user_id' => $user->id,
+                'imge' => $imageName,
+                'balance' => $request->balance
+            ]);
+
+            // Save Image in Storage folder
+            Storage::disk('public')->put($imageName, file_get_contents($request->imge));
+
+            // Return Json Response
+            return response()->json([
+                'message' => "Post successfully created."
+            ],200);
+        } catch (\Exception $e) {
+            // Return Json Response
+            return response()->json([
+                'message' => "Something went really wrong!"
+            ],500);
+        }
     }
 
     /**

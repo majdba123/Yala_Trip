@@ -10,7 +10,8 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\BreakingController;
-
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ChargeBalanceController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -81,7 +82,10 @@ Route::group(['prefix' => 'driver' , 'middleware' => ['driv','auth:sanctum']], f
     Route::post('/trip_finished/{id}', [DriverController::class, 'finish_trip']);
     Route::post('/break_finished/{id}', [DriverController::class, 'break_finished']);
 
-    Route::get('/get_info', [DriverController::class, 'info'])->middleware('auth:sanctum');
+    Route::get('/get_info', [DriverController::class, 'info']);
+    Route::post('/update_profile', [DriverController::class, 'updateProfile']);
+
+    Route::post('/history_trip', [DriverController::class, 'trip_history']);
 });
 
 
@@ -104,7 +108,15 @@ Route::group(['prefix' => 'user' , 'middleware' => ['use','auth:sanctum']], func
     Route::post('/all_trip_path/{id}', [TripController::class, 'index_trip']);
 
     Route::post('/make_reservation/{id}', [ReservationController::class, 'booking']);
-    Route::get('/panding_reservation', [ReservationController::class, 'panding_reservation']);
+    Route::post('/panding_reservation', [ReservationController::class, 'panding_reservation']);
+
+    Route::post('/rate_trip/{id}', [RatingController::class, 'createRating']);
+
+    Route::post('/charge_blance', [ChargeBalanceController::class, 'store']);
+
+
+    Route::get('/get_info', [UserApiController::class, 'info']);
+    Route::post('/update_profile', [UserApiController::class, 'updateProfile']);
 
 });
 

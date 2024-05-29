@@ -357,14 +357,103 @@ class DriverController extends Controller
         $data = [
             'name' => $user->name,
             'email' => $user->email,
-            'password' => Crypt::decrypt($password),
             'point' =>  $user->point,
             'phone' =>  $user->phone,
+            'lat' =>  $user->lat,
+            'lang' =>  $user->lang,
             'model_car' =>  $user->Driver->model_car,
             'number_car' =>  $user->Driver->number_car,
             'color_car' =>  $user->Driver->color_car,
         ];
         $profile_data[] = $data;
         return response()->json($profile_data);
+    }
+
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$user->id,
+            'phone' => 'sometimes|required|string|max:255',
+            'model_car' => 'sometimes|required|string|max:255',
+            'number_car' => 'sometimes|required|string|max:255',
+            'color_car' => 'sometimes|required|string|max:255',
+            'password' => 'sometimes|nullable|min:8',
+        ]);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+        if ($request->has('name')) {
+            $user->name = $request->input('name');
+
+        }
+        if ($request->has('email')) {
+            $user->email = $request->input('email');
+        }
+        if ($request->has('phone')) {
+            $user->phone = $request->input('phone');
+        }
+        if ($request->has('model_car')) {
+            $user->Driver->model_car = $request->input('model_car');
+        }
+        if ($request->has('number_car')) {
+            $user->Driver->number_car = $request->input('number_car');
+        }
+        if ($request->has('color_car')) {
+            $user->Driver->color_car = $request->input('color_car');
+        }
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+        $user->save();
+        return response()->json(['message' => 'Profile updated successfully']);
+    }
+
+
+    public function trip_history(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'sometimes|required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+        $user = Auth::user();
+        $driver = $user->Driver;
+        // Retrieve all trips for the driver with an optional status filter
+        $trips = $driver->Trip()
+            ->with(['Reservation' => function ($query) {
+                $query->with('user:id,name')
+                    ->where('status', '!=', 'canceled');
+            }])
+            ->get()
+            ->map(function ($trip) {
+                // Replace user_id with the associated user's name
+                $trip->reservation->each(function ($reservation) {
+                    $reservation->user_name = $reservation->user->name;
+                    unset($reservation->user);
+                });
+                return $trip;
+            });
+        // Create a new array with the desired structure
+        $response = [];
+        // Populate the array with the data from the trips collection
+        foreach ($trips as $trip) {
+            $response[] = [
+                'id' => $trip->id,
+                'from' => $trip->Path->from,
+                'to' => $trip->Path->to,
+                'driver_id' => $trip->Driver->name,
+                'num_passenger' => $trip->num_passenger,
+                'status' => $trip->status,
+                'reservation' => $trip->reservation->toArray(),
+            ];
+        }
+        // Return the JSON response
+        return response()->json($response);
     }
 }

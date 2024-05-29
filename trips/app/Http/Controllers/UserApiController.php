@@ -81,4 +81,50 @@ class UserApiController extends Controller
           "message"=>"logged out"
         ]);
     }
+
+    public function info()
+    {
+        $user = Auth::user();
+        $password=$user->password;
+        $data = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'point' =>  $user->point,
+            'phone' =>  $user->phone,
+            'lat' =>  $user->lat,
+            'lang' =>  $user->lang,
+        ];
+        $profile_data[] = $data;
+        return response()->json($profile_data);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$user->id,
+            'phone' => 'sometimes|required|string|max:255',
+            'password' => 'sometimes|nullable|min:8',
+        ]);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+        if ($request->has('name')) {
+            $user->name = $request->input('name');
+
+        }
+        if ($request->has('email')) {
+            $user->email = $request->input('email');
+        }
+        if ($request->has('phone')) {
+            $user->phone = $request->input('phone');
+        }
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+        $user->save();
+        return response()->json(['message' => 'Profile updated successfully']);
+    }
 }

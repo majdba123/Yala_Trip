@@ -52,6 +52,7 @@ class TripController extends Controller
                         'id' => $breakk->id,
                         'sorted' => $breakk->break->sorted,
                         'name' => $breakk->break->name,
+                        'status' => $breakk->status,
                         // add other break fields as needed
                     ];
                 })->all()
