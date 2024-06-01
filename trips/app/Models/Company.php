@@ -21,6 +21,11 @@ class Company extends Model
     {
         return $this->hasMany(Rate_comapny::class);
     }
+    public function Driver_Company()
+    {
+        return $this->hasMany(Driver_Company::class);
+    }
+
 
     public function Comp_trip()
     {

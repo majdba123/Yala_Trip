@@ -10,7 +10,7 @@ class Driver_Bus extends Model
     use HasFactory;
     protected $fillable = [
         'bus_id',
-        'driver_id',
+        'driver_Company_id',
         'status',
     ];
 
@@ -21,7 +21,7 @@ class Driver_Bus extends Model
 
     public function Driver()
     {
-        return $this->belongsTo(Driver::class,'driver_id');
+        return $this->belongsTo(Driver_Company::class,'driver_Company_id');
     }
 
 }

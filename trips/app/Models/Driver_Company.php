@@ -5,30 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Driver extends Model
+class Driver_Company extends Model
 {
     use HasFactory;
     protected $fillable = [
         'user_id',
-        'model_car',
-        'number_car',
-        'color_car',
-        'type_driver',
+        'company_id',
+        'status',
+
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class,'user_id');
     }
-
-    public function Trip()
+    public function company()
     {
-        return $this->hasMany(Trip::class);
+        return $this->belongsTo(User::class,'company_id');
     }
-
-    public function Order_private()
+    public function Driver_Bus()
     {
-        return $this->hasMany(Order_private::class);
+        return $this->hasMany(Driver_Bus::class);
     }
-
 }

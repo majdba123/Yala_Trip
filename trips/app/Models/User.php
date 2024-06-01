@@ -55,6 +55,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Driver::class);
     }
+    public function Driver_Company()
+    {
+        return $this->hasOne(Driver_Company::class);
+    }
     public function Private_trip()
     {
         return $this->hasMany(Private_trip::class);

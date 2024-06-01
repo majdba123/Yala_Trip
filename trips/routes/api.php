@@ -14,6 +14,8 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ChargeBalanceController;
 use App\Http\Controllers\PrivateTripController;
 use App\Http\Controllers\OrderPrivateController;
+use App\Http\Controllers\BusController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -161,7 +163,12 @@ Route::group(['prefix' => 'admin' , 'middleware' => ['checkAdmi','auth:sanctum']
 
 
 
-Route::group(['prefix' => 'company' , 'middleware' => ['checkAdmi','auth:sanctum']], function () {
+Route::group(['prefix' => 'company' , 'middleware' => ['company','auth:sanctum']], function () {
+    Route::post('register/driver',[CompanyController::class,'register_driver']);
 
-
+    Route::post('/bus_store', [BusController::class, 'store']);
+    Route::put('/bus_update/{id}', [BusController::class, 'update']);
+    Route::delete('/bus_delete/{id}', [BusController::class, 'destroy']);
+    Route::get('/all_bus', [BusController::class, 'index']);
+    Route::post('/bus_by_status', [BusController::class, 'bus_by_status']);
 });
