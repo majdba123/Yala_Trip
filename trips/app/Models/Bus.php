@@ -13,13 +13,14 @@ class Bus extends Model
         'number',
         'num_passenger',
         'status',
-        'company_id'
+        'company_id',
+        'driver__company_id'
 
     ];
 
-    public function Driver_Bus()
+    public function Driver_company()
     {
-        return $this->hasMany(Driver_Bus::class);
+        return $this->belongsTo(Driver_Company::class , 'driver__company_id');
     }
     public function Bus_Trip()
     {

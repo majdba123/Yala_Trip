@@ -9,20 +9,18 @@ class Subscriptions extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id',
         'company_id',
         'type',
         'status',
         'end_date',
+        'date_start',
         'price',
 
     ];
-
-    public function user()
+    public function user_subscription()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->hasMany(user_subscription::class);
     }
-
     public function company()
     {
         return $this->belongsTo(Company::class,'company_id');

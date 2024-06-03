@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Company;
+use App\Models\Driver_Company;
 class BusController extends Controller
 {
     /**
@@ -61,22 +62,41 @@ class BusController extends Controller
         $validator = Validator::make($request->all(), [
             'number' => 'required|integer',
             'num_passenger' => 'required|integer',
+            'driver__company_id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             $errors = $validator->errors()->first();
             return response()->json(['error' => $errors], 422);
         }
+
         $user = Auth::user();
         $company=$user->Company->id;
+
+        $driverCompany = Driver_Company::find($request->input('driver__company_id'));
+
+        if (!$driverCompany) {
+            return response()->json(['error' => 'Driver company not found'], 404);
+        }
+
+        if ($driverCompany->status != 'panding') {
+            return response()->json(['error' => 'Driver company status is not panding'], 403);
+        }
+
+        if ($driverCompany->company_id != $company) {
+            return response()->json(['error' => 'Driver company does not belong to the same company'], 403);
+        }
 
         $bus = new Bus();
         $bus->number = $request->input('number');
         $bus->company_id =$company;
         $bus->num_passenger = $request->input('num_passenger');
+        $bus->driver__company_id = $request->input('driver__company_id');
         $bus->save();
+        $driverCompany->status = 'available';
+        $driverCompany->save();
 
         return response()->json([
-            'message' => 'bus created successfully',
+            'message' => 'Bus created successfully',
         ]);
     }
 
@@ -104,12 +124,12 @@ class BusController extends Controller
         $validator = Validator::make($request->all(), [
             'number' => 'integer',
             'num_passenger' => 'integer',
+            'driver__company_id' => 'integer',
         ]);
         if ($validator->fails()) {
             $errors = $validator->errors()->first();
             return response()->json(['error' => $errors], 422);
         }
-
         $user = Auth::user();
         $company = $user->Company->id;
         $bus = Bus::with('company')->find($id);
@@ -120,7 +140,21 @@ class BusController extends Controller
             if ($request->has('num_passenger')) {
                 $bus->num_passenger = $request->input('num_passenger');
             }
-
+            if ($request->has('driver__company_id')) {
+                $driverCompany = Driver_Company::find($request->input('driver__company_id'));
+                if (!$driverCompany) {
+                    return response()->json(['error' => 'Driver company not found'], 404);
+                }
+                if ($driverCompany->status!= 'panding') {
+                    return response()->json(['error' => 'Driver company status is not panding'], 403);
+                }
+                if ($driverCompany->company_id!= $company) {
+                    return response()->json(['error' => 'Driver company does not belong to the same company'], 403);
+                }
+                $bus->driver__company_id = $request->input('driver__company_id');
+                $driverCompany->status = 'available';
+                $driverCompany->save();
+            }
             $bus->save();
 
             return response()->json([

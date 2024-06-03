@@ -75,9 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Contuct_us::class);
     }
-    public function Subscriptions()
+    public function user_subscription()
     {
-        return $this->hasMany(Subscriptions::class);
+        return $this->hasMany(user_subscription::class);
     }
     public function Company()
     {

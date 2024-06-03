@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('end_time');
             $table->string('price');
             $table->string('status')->default('panding');
+            $table->string('type')->default('0');
             $table->timestamps();
         });
     }

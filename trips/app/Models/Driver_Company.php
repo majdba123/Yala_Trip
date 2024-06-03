@@ -23,8 +23,8 @@ class Driver_Company extends Model
     {
         return $this->belongsTo(User::class,'company_id');
     }
-    public function Driver_Bus()
+    public function Bus()
     {
-        return $this->hasMany(Driver_Bus::class);
+        return $this->hasOne(Bus::class);
     }
 }

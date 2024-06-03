@@ -15,6 +15,7 @@ class Comp_trip extends Model
         'start_time',
         'end_time',
         'price',
+        'type',
         'status',
     ];
 

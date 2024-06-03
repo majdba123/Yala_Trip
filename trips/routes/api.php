@@ -15,6 +15,8 @@ use App\Http\Controllers\ChargeBalanceController;
 use App\Http\Controllers\PrivateTripController;
 use App\Http\Controllers\OrderPrivateController;
 use App\Http\Controllers\BusController;
+use App\Http\Controllers\DriverCompanyController;
+use App\Http\Controllers\CompTripController;
 
 
 /*
@@ -140,6 +142,7 @@ Route::group(['prefix' => 'user' , 'middleware' => ['use','auth:sanctum']], func
 
     Route::post('/history_order_private_trip', [UserApiController::class, 'history_order_private_trip']);
 
+    Route::post('/all_unversity_trip', [CompTripController::class, 'index']);
 
 });
 
@@ -171,4 +174,13 @@ Route::group(['prefix' => 'company' , 'middleware' => ['company','auth:sanctum']
     Route::delete('/bus_delete/{id}', [BusController::class, 'destroy']);
     Route::get('/all_bus', [BusController::class, 'index']);
     Route::post('/bus_by_status', [BusController::class, 'bus_by_status']);
+
+    Route::get('/all_driver', [DriverCompanyController::class, 'index']);
+    Route::post('/all_driver_by_status', [DriverCompanyController::class, 'driver_by_status']);
+    Route::post('/block_driver/{id}', [DriverCompanyController::class, 'block_driver']);
+
+
+    Route::post('/store_trip', [CompTripController::class, 'store']);
+    Route::put('/company_trip_update/{id}', [CompTripController::class, 'update']);
+
 });

@@ -5,26 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tickt extends Model
+class user_subscription extends Model
 {
     use HasFactory;
     protected $fillable = [
         'user_id',
-        'comp_trip_id',
-        'price',
-        'type',
+        'subscriptions_id',
         'status',
 
-
     ];
-
     public function user()
     {
         return $this->belongsTo(User::class,'user_id');
     }
-
-    public function Comp_trip()
+    public function subscriptions()
     {
-        return $this->belongsTo(Comp_trip::class,'comp_trip_id');
+        return $this->belongsTo(Subscriptions::class,'subscriptions_id');
     }
+
 }
