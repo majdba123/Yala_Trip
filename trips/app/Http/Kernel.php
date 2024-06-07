@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'driv' => \App\Http\Middleware\driver::class,
         'use' => \App\Http\Middleware\user::class,
         'company' => \App\Http\Middleware\check_company::class,
+        'driv_comp' => \App\Http\Middleware\driver_company::class,
     ];
 }

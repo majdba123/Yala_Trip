@@ -180,7 +180,7 @@ class ReservationController extends Controller
             'user' => $booking->user->name,
             'num_passenger' =>  $booking->num_passenger,
             'price' =>  $booking->price,
-            'status' =>  $booking->status ?: 'pending',
+            'status' =>  $booking->status ?: 'panding',
         ];
         if ($booking->breaking_id) {
             $data['breaking_id'] = $booking->break->name;

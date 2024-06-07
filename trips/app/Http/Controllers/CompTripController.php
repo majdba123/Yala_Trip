@@ -18,7 +18,7 @@ class CompTripController extends Controller
     public function index(Request $request)
     {
         $compTripsQuery = Comp_trip::with(['Bus_Trip' => function ($query) {
-            $query->where('status', 'panding');
+            $query->where('status', 'panding')->orWhere('status', 'running');
         }]);
 
         if ($request->has('company_id')) {
@@ -37,6 +37,10 @@ class CompTripController extends Controller
 
         $tripData = [];
         foreach ($compTrips as $trip) {
+            $tripType = 'Not Going';
+            if ($trip->type == 1) {
+                $tripType = 'Going_return';
+            }
             $data = [
                 'id' => $trip->id,
                 'company_id' => $trip->company_id,
@@ -46,6 +50,7 @@ class CompTripController extends Controller
                 'start_time' => $trip->start_time,
                 'end_time' => $trip->end_time,
                 'status' => $trip->status,
+                'trip_type' => $tripType,
                 'bus_trips' => $trip->Bus_Trip->map(function ($busTrip) {
                     return [
                         'id' => $busTrip->id,
@@ -54,7 +59,7 @@ class CompTripController extends Controller
                         'lang' => $busTrip->bus->Driver_company->user->lang,
                         'lat' => $busTrip->bus->Driver_company->user->lat,
                         'number_bus' => $busTrip->bus->number,
-                        'number_passenger' => $busTrip->bus->num_passenger,
+                        'status' => $busTrip->status,
                     ];
                 })->all(),
             ];
@@ -223,8 +228,72 @@ class CompTripController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comp_trip $comp_trip)
+    public function destroy($id)
     {
+        // Get the company_trip by ID
+        $companyTrip = Comp_trip::find($id);
 
+        // Check if the user requested the same company
+        if ($companyTrip->company_id != auth()->user()->Company->id) {
+            // Return an error if the user is not authorized to delete this company trip
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get all bus trips associated with this company trip
+        $busTrips = Bus_Trip::where('comp_trip_id', $id)->get();
+
+        // Delete each bus trip and update the driver status
+        foreach ($busTrips as $busTrip) {
+            // Get the driver associated with this bus trip
+            $driver = $busTrip->bus->Driver_company;
+
+            // Update the driver status to available
+            $driver->status = 'available';
+            $driver->save();
+
+            // Delete the bus trip
+            $busTrip->delete();
+        }
+
+        // Delete the company trip
+        $companyTrip->delete();
+
+        // Return a success response
+        return response()->json(['message' => 'Company trip deleted successfully']);
+    }
+
+    public function all_comp_trip(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'tatus' => 'sometimes|required|string|max:255',
+            'type' => 'sometimes|required|integer|in:0,1',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+
+        // Get the company ID of the authenticated user
+        $companyId = auth()->user()->Company->id;
+
+        // Initialize the query
+        $companyTrips = Comp_trip::where('company_id', $companyId);
+
+        // If status is provided, filter by status
+        if ($request->has('status')) {
+            $companyTrips->where('status', $request->input('status'));
+        }
+
+        // If type is provided, filter by type
+        if ($request->has('type')) {
+            $companyTrips->where('type', $request->input('type'));
+        }
+
+        // Execute the query and retrieve the results
+        $companyTrips = $companyTrips->get();
+
+        // Return the company trips in a JSON response
+        return response()->json($companyTrips);
     }
 }

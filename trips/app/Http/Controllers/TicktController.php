@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Tickt;
 use Illuminate\Http\Request;
-
+use App\Models\Bus_Trip;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 class TicktController extends Controller
 {
     /**
@@ -26,9 +29,97 @@ class TicktController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'num_passenger' => 'sometimes|required|string|max:255',
+            'type' => 'sometimes|required|in:0,1',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->first();
+            return response()->json(['error' => $errors], 422);
+        }
+
+        $busTripId = $id; // assuming $id is the bus_trip_id
+        $requestedType = $request->input('type');
+        if ($requestedType == 1) {
+            $busTrip = Bus_Trip::find($busTripId);
+            if ($busTrip->comp_trip->type!= 1) {
+                return response()->json(['error' => 'Sorry, this trip only goes for company trips with type 1'], 422);
+
+            }}elseif($requestedType == 0){
+                $busTrip = Bus_Trip::find($busTripId);
+                if ($busTrip->status == 'running') {
+                    return response()->json(['error' => 'The trip has already started'], 422);
+                }
+            }
+        $requestedNumPassenger = $request->input('num_passenger');
+
+        // Get all tickets with same type and bus_trip_id
+        $tickets = Tickt::where('type', $requestedType)
+            ->where('bus__trip_id', $busTripId)
+            ->get();
+        // Calculate the total number of passengers for the same type and bus_trip_id
+        $totalNumPassenger = $tickets->sum('num_passenger') ?? 0;
+
+        // Get the bus capacity from the bus_trip table
+        $busTrip = Bus_Trip::find($busTripId);
+        $price= $busTrip->comp_trip->price;
+        $busCapacity = $busTrip->bus->num_passenger;
+
+        // Check if the total number of passengers + requested number of passengers is less than or equal to the bus capacity
+        if ($totalNumPassenger + $requestedNumPassenger <= $busCapacity) {
+            // Store the ticket
+            $user=Auth::user();
+            $ticket = new Tickt();
+            $ticket->bus__trip_id  = $busTripId;
+            $ticket->user_id  = $user->id;
+            $ticket->type = $requestedType;
+            $ticket->num_passenger = $requestedNumPassenger;
+            $ticket->price = $price * $requestedNumPassenger;
+            $ticket->save();
+            $updatedTotalNumPassenger = Tickt::where('bus__trip_id', $busTripId)->sum('num_passenger');
+
+            $companyTripType = Bus_Trip::find($busTripId)->comp_trip->type;
+            if ($companyTripType == 1) {
+                // If type is 1, use 2 * busCapacity
+                if ($updatedTotalNumPassenger == 2 * $busCapacity) {
+                    // Update the bus trip status to complete
+                    $busTrip = Bus_Trip::find($busTripId);
+                    if ($busTrip->status != 'running') {
+                        $busTrip->status = 'complete';
+                        $busTrip->save();
+                    }
+                }
+            } elseif ($companyTripType == 0) {
+                // If type is 0, use busCapacity without multiplying by 2
+                if ($updatedTotalNumPassenger == $busCapacity) {
+                    // Update the bus trip status to complete
+                    $busTrip = Bus_Trip::find($busTripId);
+                    if ($busTrip->status != 'running') {
+                        $busTrip->status = 'complete';
+                        $busTrip->save();
+                    }
+                }}
+            $data = [
+                'user' => $ticket->user->name,
+                'ticket_id' => $ticket->id,
+                'bus_trip_id' => $busTripId,
+                'num_passenger' =>  $ticket->num_passenger,
+                'price' =>  $ticket->price,
+                'status' =>  $ticket->status ?: 'panding',
+                'type' =>  $ticket->type,
+            ];
+
+            $bookingData[] = $data;
+            return response()->json($bookingData);
+
+            return response()->json(['message' => 'Ticket stored successfully'], 201);
+
+        }else{
+            return response()->json(['message' => 'can_not_store'], 201);
+        }
     }
 
     /**

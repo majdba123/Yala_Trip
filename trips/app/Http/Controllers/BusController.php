@@ -91,6 +91,7 @@ class BusController extends Controller
         $bus->company_id =$company;
         $bus->num_passenger = $request->input('num_passenger');
         $bus->driver__company_id = $request->input('driver__company_id');
+        $bus->status = 'complete';
         $bus->save();
         $driverCompany->status = 'available';
         $driverCompany->save();
@@ -176,6 +177,10 @@ class BusController extends Controller
         $company = $user->Company->id;
         $bus = Bus::with('company')->find($id);
         if ($bus && $bus->company_id == $company) {
+            $driver = $bus->Driver_company;
+            // Update the driver status to 'pending'
+            $driver->status = 'panding';
+            $driver->save();
             $bus->delete();
             return response()->json([
                 'message' => 'Bus deleted successfully',

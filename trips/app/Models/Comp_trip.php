@@ -23,10 +23,7 @@ class Comp_trip extends Model
     {
         return $this->belongsTo(Company::class,'company_id');
     }
-    public function Tickt()
-    {
-        return $this->hasMany(Tickt::class);
-    }
+
     public function Bus_Trip()
     {
         return $this->hasMany(Bus_Trip::class);

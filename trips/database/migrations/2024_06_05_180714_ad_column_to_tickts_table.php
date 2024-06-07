@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Comp_trip;
-
+use App\Models\Bus_Trip;
 return new class extends Migration
 {
     /**
@@ -13,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tickts', function (Blueprint $table) {
-            $table->foreignIdFor(Comp_trip::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-
+            $table->foreignIdFor(Bus_Trip::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

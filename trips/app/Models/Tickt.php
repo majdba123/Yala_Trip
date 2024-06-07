@@ -10,7 +10,8 @@ class Tickt extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
-        'comp_trip_id',
+        'bus__trip_id',
+        'num_passenger',
         'price',
         'type',
         'status',
@@ -23,8 +24,8 @@ class Tickt extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
-    public function Comp_trip()
+    public function Bus_Trip()
     {
-        return $this->belongsTo(Comp_trip::class,'comp_trip_id');
+        return $this->belongsTo(Bus_Trip::class,'comp_trip_id');
     }
 }

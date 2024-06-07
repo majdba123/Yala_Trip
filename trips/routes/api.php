@@ -17,6 +17,7 @@ use App\Http\Controllers\OrderPrivateController;
 use App\Http\Controllers\BusController;
 use App\Http\Controllers\DriverCompanyController;
 use App\Http\Controllers\CompTripController;
+use App\Http\Controllers\TicktController;
 
 
 /*
@@ -77,24 +78,22 @@ Route::group(['prefix' => 'driver' , 'middleware' => ['driv','auth:sanctum']], f
     Route::put('/trip_update/{id}', [TripController::class, 'update']);
     Route::delete('/trip_delete/{id}', [TripController::class, 'destroy']);
 
+
     Route::post('/QR_reservation', [DriverController::class, 'check_QR_COM']);
     Route::post('/QR_reservation_finished', [DriverController::class, 'check_QR_finished']);
     Route::post('/out_resevation/{id}', [DriverController::class, 'out_reservation']);
-
     Route::get('/current_trip', [DriverController::class, 'current_trip']);
-
     Route::post('/current_reservation/{id}', [DriverController::class, 'current_reservation']);
     Route::post('/current_reservation_break/{id}', [DriverController::class, 'resr_of_breaks']);
-
     Route::post('/trip_finished/{id}', [DriverController::class, 'finish_trip']);
     Route::post('/break_finished/{id}', [DriverController::class, 'break_finished']);
-
     Route::get('/get_info', [DriverController::class, 'info']);
     Route::post('/update_profile', [DriverController::class, 'updateProfile']);
-
     Route::post('/history_trip', [DriverController::class, 'trip_history']);
 
+
     Route::get('/display_private_trip', [PrivateTripController::class, 'driver_order']);
+
     Route::post('/request_private_order/{id}', [OrderPrivateController::class, 'get_private_order_by_driver']);
     Route::post('/finished_oder_private/{id}', [OrderPrivateController::class, 'finished_oder_private']);
 
@@ -144,6 +143,8 @@ Route::group(['prefix' => 'user' , 'middleware' => ['use','auth:sanctum']], func
 
     Route::post('/all_unversity_trip', [CompTripController::class, 'index']);
 
+    Route::post('/store_tickit/{id}', [TicktController::class, 'store']);
+
 });
 
 
@@ -179,8 +180,22 @@ Route::group(['prefix' => 'company' , 'middleware' => ['company','auth:sanctum']
     Route::post('/all_driver_by_status', [DriverCompanyController::class, 'driver_by_status']);
     Route::post('/block_driver/{id}', [DriverCompanyController::class, 'block_driver']);
 
-
+    Route::get('/all_trip_company', [CompTripController::class, 'all_comp_trip']);
     Route::post('/store_trip', [CompTripController::class, 'store']);
     Route::put('/company_trip_update/{id}', [CompTripController::class, 'update']);
+    Route::delete('/company_trip_delete/{id}', [CompTripController::class, 'destroy']);
 
+
+});
+
+
+
+
+
+
+
+Route::group(['prefix' => 'driver_company' , 'middleware' => ['driv_comp','auth:sanctum']], function () {
+    Route::get('/my_trip', [DriverCompanyController::class, 'my_trip']);
+    Route::post('/ticket_of_trip/{id}', [DriverCompanyController::class, 'ticket_trip']);
+    Route::post('/qr_ticket', [DriverCompanyController::class, 'get_QR']);
 });

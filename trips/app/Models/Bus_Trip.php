@@ -23,4 +23,8 @@ class Bus_Trip extends Model
     {
         return $this->belongsTo(Comp_trip::class,'comp_trip_id');
     }
+    public function Tickt()
+    {
+        return $this->hasMany(Tickt::class);
+    }
 }
