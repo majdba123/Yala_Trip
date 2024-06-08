@@ -77,14 +77,14 @@ class BusController extends Controller
         if (!$driverCompany) {
             return response()->json(['error' => 'Driver company not found'], 404);
         }
+        if ($driverCompany->company_id != $company) {
+            return response()->json(['error' => 'Driver company does not belong to the same company'], 403);
+        }
 
         if ($driverCompany->status != 'panding') {
             return response()->json(['error' => 'Driver company status is not panding'], 403);
         }
 
-        if ($driverCompany->company_id != $company) {
-            return response()->json(['error' => 'Driver company does not belong to the same company'], 403);
-        }
 
         $bus = new Bus();
         $bus->number = $request->input('number');

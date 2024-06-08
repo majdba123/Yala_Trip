@@ -17,6 +17,7 @@ use App\Http\Controllers\OrderPrivateController;
 use App\Http\Controllers\BusController;
 use App\Http\Controllers\DriverCompanyController;
 use App\Http\Controllers\CompTripController;
+use App\Http\Controllers\ContuctUsController;
 use App\Http\Controllers\TicktController;
 
 
@@ -145,6 +146,12 @@ Route::group(['prefix' => 'user' , 'middleware' => ['use','auth:sanctum']], func
 
     Route::post('/store_tickit/{id}', [TicktController::class, 'store']);
 
+
+    Route::post('/contuct_us', [ContuctUsController::class, 'store']);
+    Route::put('/contuct_us_update/{id}', [ContuctUsController::class, 'update']);
+    Route::delete('/contuct_us_delete/{id}', [ContuctUsController::class, 'destroy']);
+
+
 });
 
 
@@ -198,4 +205,13 @@ Route::group(['prefix' => 'driver_company' , 'middleware' => ['driv_comp','auth:
     Route::get('/my_trip', [DriverCompanyController::class, 'my_trip']);
     Route::post('/ticket_of_trip/{id}', [DriverCompanyController::class, 'ticket_trip']);
     Route::post('/qr_ticket', [DriverCompanyController::class, 'get_QR']);
+
+    Route::post('/stat_trip_going/{id}', [DriverCompanyController::class, 'start_trip']);
+    Route::post('/finished_going_trip/{id}', [DriverCompanyController::class, 'finished_going_trip']);
+
+    Route::post('/stat_trip_returnde/{id}', [DriverCompanyController::class, 'start_trip_return']);
+    Route::post('/finished_return_trip/{id}', [DriverCompanyController::class, 'finished_return_trip']);
+
+
+
 });

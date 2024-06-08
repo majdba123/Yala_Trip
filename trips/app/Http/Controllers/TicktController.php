@@ -59,27 +59,54 @@ class TicktController extends Controller
         // Get all tickets with same type and bus_trip_id
         $tickets = Tickt::where('type', $requestedType)
             ->where('bus__trip_id', $busTripId)
+            ->where('status',  ['panding' , 'complete'])
             ->get();
         // Calculate the total number of passengers for the same type and bus_trip_id
         $totalNumPassenger = $tickets->sum('num_passenger') ?? 0;
 
         // Get the bus capacity from the bus_trip table
         $busTrip = Bus_Trip::find($busTripId);
+        if($busTrip->status == 'return')
+        {
+            return response()->json([
+                'message' => 'this trip will be finished soon sorry',
+            ]);
+        }
         $price= $busTrip->comp_trip->price;
         $busCapacity = $busTrip->bus->num_passenger;
+        $total_price1= $price * $requestedNumPassenger;
+
+        $user = auth()->user();
+        if ($user->point < $total_price1) {
+            // User does not have enough points
+            return response()->json([
+                'message' => 'You do not have enough points to make this reservation',
+            ]);
+        }
+
 
         // Check if the total number of passengers + requested number of passengers is less than or equal to the bus capacity
         if ($totalNumPassenger + $requestedNumPassenger <= $busCapacity) {
             // Store the ticket
+            $user->point -= $total_price1;
+            $user->save();
+
+            // Update driver points
+            $company = $busTrip->comp_trip->company->user;
+            $company->point += $total_price1;
+            $company->save();
+
             $user=Auth::user();
             $ticket = new Tickt();
             $ticket->bus__trip_id  = $busTripId;
             $ticket->user_id  = $user->id;
             $ticket->type = $requestedType;
             $ticket->num_passenger = $requestedNumPassenger;
-            $ticket->price = $price * $requestedNumPassenger;
+            $ticket->price = $total_price1;
             $ticket->save();
-            $updatedTotalNumPassenger = Tickt::where('bus__trip_id', $busTripId)->sum('num_passenger');
+            $updatedTotalNumPassenger = Tickt::where('bus__trip_id', $busTripId)
+            ->where('status', ['panding' , 'complete'])
+            ->sum('num_passenger');
 
             $companyTripType = Bus_Trip::find($busTripId)->comp_trip->type;
             if ($companyTripType == 1) {
@@ -118,7 +145,7 @@ class TicktController extends Controller
             return response()->json(['message' => 'Ticket stored successfully'], 201);
 
         }else{
-            return response()->json(['message' => 'can_not_store'], 201);
+            return response()->json(['message' => 'no seat available'], 201);
         }
     }
 

@@ -17,8 +17,9 @@ class CompTripController extends Controller
      */
     public function index(Request $request)
     {
-        $compTripsQuery = Comp_trip::with(['Bus_Trip' => function ($query) {
-            $query->where('status', 'panding')->orWhere('status', 'running');
+        $compTripsQuery = Comp_trip::where('status', 'panding')
+            ->with(['Bus_Trip' => function ($query) {
+            $query->whereNotIn('status', ['complete', 'finished']);
         }]);
 
         if ($request->has('company_id')) {
@@ -100,22 +101,28 @@ class CompTripController extends Controller
         $user = Auth::user();
         $company = $user->Company->id;
         $type = $request->input('type', 0);
-        $companyTrip = Comp_trip::create([
-            'from' => $request->input('from'),
-            'to' => $request->input('to'),
-            'start_time' => $request->input('start_time'),
-            'end_time' => $request->input('end_time'),
-            'price' => $request->input('price'),
-            'type' => $type,
-            'company_id' => $company,
-        ]);
+
+        $companyTrip = new Comp_trip();
+        $companyTrip->from  = $request->input('from');
+        $companyTrip->to  =$request->input('to');
+        $companyTrip->type = $type;
+        $companyTrip->start_time =$request->input('start_time');
+        $companyTrip->end_time =  $request->input('end_time');
+        $companyTrip->price = $request->input('price');
+        $companyTrip->company_id = $company;
 
         foreach ($request->input('driver_ids') as $driverId) {
             $driver = Driver_Company::find($driverId);
             if ($driver) {
+                if ($driver->company_id!== $company) {
+                    return response()->json(['error' => 'Driver does not belong to your company'], 422);
+                }
+            }
+            if ($driver) {
                 if ($driver->status !== 'available') {
                     return response()->json(['error' => 'Driver is not available'], 422);
                 }
+                $companyTrip->save();
                 $busId = $driver->Bus->id;
                 Bus_Trip::create([
                     'comp_trip_id' => $companyTrip->id,
@@ -126,6 +133,7 @@ class CompTripController extends Controller
                 return response()->json(['error' => 'Invalid driver ID'], 422);
             }
         }
+
         return response()->json([
             'message' => 'CompanyTrip created successfully',
         ]);
