@@ -16,6 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(Subscriptions::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('date_start');
+            $table->string('end_date');
             $table->string('status')->default('panding');
 
             $table->timestamps();

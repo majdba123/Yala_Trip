@@ -16,9 +16,6 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('type');
-            $table->string('status')->default('panding');
-            $table->string('date_start');
-            $table->string('end_date');
             $table->string('price');
 
             $table->timestamps();

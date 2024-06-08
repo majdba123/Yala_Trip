@@ -129,6 +129,34 @@ class CompanyController extends Controller
         //
     }
 
+
+    public function company(Request $request)
+
+    {
+
+        if ($request->has('name')) {
+            $companies = Company::whereHas('user', function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->input('name') . '%');
+            })->get();
+        } else {
+            $companies = Company::all();
+        }
+
+        $companies1 = [];
+        foreach($companies as $x)
+        {
+            $data = [
+                'company_name' => $x->user->name,
+                'email' => $x->user->email,
+                'phone' =>  $x->user->phone,
+            ];
+            $companies1[] = $data;
+        }
+
+        return response()->json($companies1);
+
+    }
+
     /**
      * Remove the specified resource from storage.
      */

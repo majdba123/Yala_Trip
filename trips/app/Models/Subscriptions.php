@@ -11,9 +11,6 @@ class Subscriptions extends Model
     protected $fillable = [
         'company_id',
         'type',
-        'status',
-        'end_date',
-        'date_start',
         'price',
 
     ];

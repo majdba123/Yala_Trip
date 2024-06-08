@@ -19,6 +19,10 @@ use App\Http\Controllers\DriverCompanyController;
 use App\Http\Controllers\CompTripController;
 use App\Http\Controllers\ContuctUsController;
 use App\Http\Controllers\TicktController;
+use App\Http\Controllers\RateComapnyController;
+use App\Http\Controllers\SubscriptionsController;
+use App\Http\Controllers\UserSubscriptionController;
+
 
 
 /*
@@ -152,6 +156,19 @@ Route::group(['prefix' => 'user' , 'middleware' => ['use','auth:sanctum']], func
     Route::delete('/contuct_us_delete/{id}', [ContuctUsController::class, 'destroy']);
 
 
+    Route::get('/all_available_subscription', [SubscriptionsController::class, 'index']);
+    Route::post('/all_subscription_by_company/{id}', [SubscriptionsController::class, 'by_company']);
+
+
+    Route::post('/get_subscription/{id}', [UserSubscriptionController::class, 'store']);
+
+    Route::get('/compant_all', [CompanyController::class, 'company']);
+
+    Route::post('/rate_company/{id}', [RateComapnyController::class, 'store']);
+
+
+
+
 });
 
 
@@ -192,6 +209,12 @@ Route::group(['prefix' => 'company' , 'middleware' => ['company','auth:sanctum']
     Route::put('/company_trip_update/{id}', [CompTripController::class, 'update']);
     Route::delete('/company_trip_delete/{id}', [CompTripController::class, 'destroy']);
 
+    Route::post('/store_subscription', [SubscriptionsController::class, 'store']);
+    Route::put('/update_subscription/{id}', [SubscriptionsController::class, 'update']);
+    Route::delete('/subscription_delete/{id}', [SubscriptionsController::class, 'destroy']);
+
+
+
 
 });
 
@@ -202,6 +225,7 @@ Route::group(['prefix' => 'company' , 'middleware' => ['company','auth:sanctum']
 
 
 Route::group(['prefix' => 'driver_company' , 'middleware' => ['driv_comp','auth:sanctum']], function () {
+
     Route::get('/my_trip', [DriverCompanyController::class, 'my_trip']);
     Route::post('/ticket_of_trip/{id}', [DriverCompanyController::class, 'ticket_trip']);
     Route::post('/qr_ticket', [DriverCompanyController::class, 'get_QR']);

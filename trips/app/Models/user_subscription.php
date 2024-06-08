@@ -11,8 +11,9 @@ class user_subscription extends Model
     protected $fillable = [
         'user_id',
         'subscriptions_id',
+        'end_date',
+        'date_start',
         'status',
-
     ];
     public function user()
     {

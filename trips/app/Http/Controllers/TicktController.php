@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tickt;
+use App\Models\user_subscription;
 use Illuminate\Http\Request;
 use App\Models\Bus_Trip;
 use Illuminate\Support\Facades\Validator;
@@ -77,24 +78,37 @@ class TicktController extends Controller
         $total_price1= $price * $requestedNumPassenger;
 
         $user = auth()->user();
-        if ($user->point < $total_price1) {
-            // User does not have enough points
-            return response()->json([
-                'message' => 'You do not have enough points to make this reservation',
-            ]);
-        }
+
+        $company_subscription = $busTrip->comp_trip->company->Subscriptions;
+        $company_subscription_ids = $company_subscription->pluck('id')->all();
+
+        $hasSubscription = user_subscription::where('user_id', $user->id)
+            ->whereIn('subscriptions_id', $company_subscription_ids)
+            ->where('status', 'active')
+            ->first();
+
 
 
         // Check if the total number of passengers + requested number of passengers is less than or equal to the bus capacity
         if ($totalNumPassenger + $requestedNumPassenger <= $busCapacity) {
             // Store the ticket
-            $user->point -= $total_price1;
-            $user->save();
+            if(!$hasSubscription){
+                if ($user->point < $total_price1) {
+                    // User does not have enough points
+                    return response()->json([
+                        'message' => 'You do not have enough points to make this reservation',
+                    ]);
+                }else{
+                    $user->point -= $total_price1;
+                    $user->save();
+                    // Update driver points
+                    $company = $busTrip->comp_trip->company->user;
+                    $company->point += $total_price1;
+                    $company->save();
+                }
+            }
 
-            // Update driver points
-            $company = $busTrip->comp_trip->company->user;
-            $company->point += $total_price1;
-            $company->save();
+
 
             $user=Auth::user();
             $ticket = new Tickt();
@@ -104,6 +118,7 @@ class TicktController extends Controller
             $ticket->num_passenger = $requestedNumPassenger;
             $ticket->price = $total_price1;
             $ticket->save();
+
             $updatedTotalNumPassenger = Tickt::where('bus__trip_id', $busTripId)
             ->where('status', ['panding' , 'complete'])
             ->sum('num_passenger');
