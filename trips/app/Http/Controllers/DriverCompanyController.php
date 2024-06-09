@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Driver_Company;
+use App\Models\Bus_Trip;
 use App\Models\Bus;
 use App\Models\Tickt;
-use App\Models\Bus_Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -372,4 +372,53 @@ class DriverCompanyController extends Controller
         }
         return response()->json(['message' => 'trip_return finished successfully']);
     }
+
+    public function history(Request $request)
+    {
+        $user = Auth::user();
+
+        try {
+            $bus_id = $user->Driver_Company->Bus->id;
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Driver does not have a bus'], 404);
+        }
+
+        $busTrips = Bus_Trip::where('bus_id', $bus_id);
+
+        $status = request()->input('status');
+        if ($status) {
+            $busTrips = $busTrips->where('status', $status);
+        }
+
+        $busTrips = $busTrips->get();
+
+        if ($busTrips->isEmpty()) {
+            return response()->json(['message' => 'No bus trips found'], 404);
+        }
+
+        $bookingData = [];
+
+        foreach ($busTrips as $busTrip) {
+            $totalPrice = Tickt::where('bus__trip_id', $busTrip->id)
+            ->where('status', 'complete')
+            ->sum('price');
+
+            $data = [
+                'from' => $busTrip->comp_trip->from,
+                'to' => $busTrip->comp_trip->to,
+                'tart_time' =>  $busTrip->comp_trip->start_time,
+                'end_time' =>   $busTrip->comp_trip->end_time,
+                'price' => $busTrip->comp_trip->price,
+                'status_trip' =>$busTrip->comp_trip->status,
+                'type' =>  $busTrip->comp_trip->type,
+                'status_bus' =>$busTrip->status,
+                'total_price' =>$totalPrice,
+            ];
+
+            $bookingData[] = $data;
+        }
+
+        return response()->json($bookingData);
+    }
+
 }

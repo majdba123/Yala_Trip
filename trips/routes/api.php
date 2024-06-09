@@ -237,5 +237,10 @@ Route::group(['prefix' => 'driver_company' , 'middleware' => ['driv_comp','auth:
     Route::post('/finished_return_trip/{id}', [DriverCompanyController::class, 'finished_return_trip']);
 
 
+    Route::get('/my_profile', [UserApiController::class, 'info']);
+    Route::put('/update_profile', [UserApiController::class, 'updateProfile']);
+
+    Route::get('/history_all_trip', [DriverCompanyController::class, 'history']);
+
 
 });
