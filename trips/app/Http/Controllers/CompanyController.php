@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Comp_trip;
 use App\Models\Driver_Company;
+use App\Models\Bus_Trip;
 
 
 class CompanyController extends Controller
@@ -160,8 +162,79 @@ class CompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Company $company)
+    public function dashboard(Request $request)
     {
-        //
+
+        $companyId = auth()->user()->Company->id;
+
+
+        // Get the company trips that belong to this company
+        $companyTrips = Comp_trip::where('company_id', $companyId)
+        ->where('status', 'finished')
+        ->get();
+        if($companyTrips ){
+            foreach($companyTrips  as $companyTripss)
+            {
+                if ($companyTripss->has('Bus_Trip')) {
+                    $busTrips = $companyTripss->Bus_Trip()->where('status', 'finished')->get();
+
+                    if ($busTrips->isNotEmpty()) {
+                        $totalPrice = 0;
+                        foreach($busTrips as $bus_tripp)
+                        {
+                            $tickets = $bus_tripp->Tickt()->where('status', 'complete')->get();
+                            if($tickets->isNotEmpty())
+                            {
+                                $totalPrice += $tickets->sum('price');
+                            }
+                        }
+                        // do something with $totalPrice
+                    }
+                }
+            }
+        }
+
+
+        $all_driver = Driver_Company::where('company_id' ,$companyId )->count();
+        $finished_trip =$companyTrips->count();
+        $panding_trip =$companyTrips->where('status' , 'panding')->count();
+
+        $num_subscription = Company::find($companyId)->Subscriptions;
+        $count_active = 0;
+        $count_expired = 0;
+        $total_profit = 0;
+        $count_user = 0;
+        foreach($num_subscription as $subscription) {
+            $count_active += $subscription->user_subscription->where('status' , 'active')->count();
+        }
+
+        foreach($num_subscription as $subscription) {
+            $count_expired += $subscription->user_subscription->where('status' , 'expired')->count();
+        }
+
+        foreach($num_subscription as $subscription) {
+            $total_profit += $subscription->price * $subscription->user_subscription->count();
+        }
+
+        foreach($num_subscription as $subscription) {
+            $count_user += $subscription->user_subscription->count();
+        }
+
+        $data = [
+            "total_profit_trips" => $totalPrice,
+            "num_driver" => $all_driver,
+            "num_finished_trip" => $finished_trip,
+            "num_current_trip" =>$panding_trip,
+            "num_suscription_active" => $count_active,
+            "num_suscription_finished" => $count_expired,
+            "total_profit_from_suscripe" => $total_profit,
+            "total_driver" => Company::find($companyId)->Driver_Company->count(),
+            "total_bus" => Company::find($companyId)->Bus->count(),
+            "total_all_trip" => Company::find($companyId)->Comp_trip->count(),
+            "count_user" => $count_user,
+        ];
+
+        return response()->json($data);
+
     }
 }

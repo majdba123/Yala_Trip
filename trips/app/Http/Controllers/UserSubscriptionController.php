@@ -13,9 +13,15 @@ class UserSubscriptionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function delete_user($id)
     {
-        //
+        $company =Auth::user()->Company->id;
+
+        $subscription=user_subscription::find($id);
+        $subscription->delete();
+        return response()->json([
+            'meassage' => 'delete done'
+        ]);
     }
 
     /**

@@ -142,9 +142,21 @@ class CompTripController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Comp_trip $comp_trip)
+    public function show($id)
     {
-        //
+        $trip = Comp_trip::with(['Bus_Trip' => function ($query) {
+            $query->with(['Tickt' => function ($query) {
+                $query->where('status', 'complete');
+            }]);
+        }])->find($id);
+
+        $trip->bus_trip->transform(function ($busTrip) {
+            $busTrip->total_profit = $busTrip->Tickt->sum('price');
+            return $busTrip;
+        });
+
+        return response()->json($trip);
+
     }
 
     /**
@@ -273,7 +285,7 @@ class CompTripController extends Controller
     public function all_comp_trip(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'tatus' => 'sometimes|required|string|max:255',
+            'status' => 'sometimes|required|string|max:255',
             'type' => 'sometimes|required|integer|in:0,1',
         ]);
 
@@ -303,5 +315,12 @@ class CompTripController extends Controller
 
         // Return the company trips in a JSON response
         return response()->json($companyTrips);
+    }
+
+    public function show_bus_trip($id)
+    {
+        $bus_trip= Bus_Trip::with('comp_trip' , 'Tickt')->find($id);
+
+        return response()->json($bus_trip);
     }
 }

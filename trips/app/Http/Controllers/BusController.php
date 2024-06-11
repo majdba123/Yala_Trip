@@ -104,9 +104,20 @@ class BusController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Bus $bus)
+    public function show($id)
     {
-        //
+        $user = Auth::user();
+        $company = $user->Company->id;
+        $bus = Bus::with('company', 'Driver_Company')->find($id);
+        if ($bus && $bus->company->id == $company) {
+            return response()->json([
+                'bus' => $bus,
+            ]);
+        } else {
+            return response()->json([
+                'essage' => 'You are not the owner of this bus',
+            ]);
+        }
     }
 
     /**

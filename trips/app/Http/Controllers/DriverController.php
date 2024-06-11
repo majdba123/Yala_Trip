@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Trip;
 use App\Models\Driver;
+use App\Models\Driver_Company;
 use App\Models\breaking_Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -487,4 +488,6 @@ class DriverController extends Controller
         return response()->json($response);
 
     }
+
+
 }

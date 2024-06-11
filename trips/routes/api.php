@@ -25,6 +25,9 @@ use App\Http\Controllers\UserSubscriptionController;
 
 
 
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -199,20 +202,38 @@ Route::group(['prefix' => 'company' , 'middleware' => ['company','auth:sanctum']
     Route::delete('/bus_delete/{id}', [BusController::class, 'destroy']);
     Route::get('/all_bus', [BusController::class, 'index']);
     Route::post('/bus_by_status', [BusController::class, 'bus_by_status']);
+    Route::post('/show_bus/{id}', [BusController::class, 'show']);
 
     Route::get('/all_driver', [DriverCompanyController::class, 'index']);
     Route::post('/all_driver_by_status', [DriverCompanyController::class, 'driver_by_status']);
     Route::post('/block_driver/{id}', [DriverCompanyController::class, 'block_driver']);
+    Route::post('/show_driver/{id}', [DriverCompanyController::class, 'show']);
+    Route::post('/trip_of_driver/{id}', [DriverCompanyController::class, 'trip_driver']);
+
+
+
 
     Route::get('/all_trip_company', [CompTripController::class, 'all_comp_trip']);
     Route::post('/store_trip', [CompTripController::class, 'store']);
+    Route::post('/show_trip/{id}', [CompTripController::class, 'show']);
     Route::put('/company_trip_update/{id}', [CompTripController::class, 'update']);
     Route::delete('/company_trip_delete/{id}', [CompTripController::class, 'destroy']);
+
+
+    Route::post('/show_bus_trip/{id}', [CompTripController::class, 'show_bus_trip']);
+
 
     Route::post('/store_subscription', [SubscriptionsController::class, 'store']);
     Route::put('/update_subscription/{id}', [SubscriptionsController::class, 'update']);
     Route::delete('/subscription_delete/{id}', [SubscriptionsController::class, 'destroy']);
 
+    Route::get('/dashboard', [CompanyController::class, 'dashboard']);
+
+    Route::get('/ALL_SUBSCRIPTION', [SubscriptionsController::class, 'index_company']);
+    Route::post('/show_SUBSCRIPTION/{id}', [SubscriptionsController::class, 'show']);
+
+
+    Route::delete('/delete_client/{id}', [UserSubscriptionController::class, 'delete_user']);
 
 
 

@@ -31,6 +31,14 @@ class SubscriptionsController extends Controller
     }
 
 
+    public function index_company()
+    {
+        $companyId=Auth::user()->Company->id;
+        $subscription =Subscriptions::with('user_subscription')->where('company_id',$companyId)->get();
+
+        return response()->json($subscription);
+    }
+
     public function by_company($company_id)
     {
         $subscriptions = Subscriptions::where('company_id', $company_id)->get();
@@ -85,9 +93,12 @@ class SubscriptionsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Subscriptions $subscriptions)
+    public function show($id)
     {
-        //
+        $companyId=Auth::user()->Company->id;
+        $subscription =Subscriptions::with('user_subscription')->where('company_id', $companyId)->find($id);
+
+        return response()->json($subscription);
     }
 
     /**

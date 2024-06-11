@@ -92,11 +92,31 @@ class DriverCompanyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Driver_Company $driver_Company)
+    public function show($id)
     {
-        //
-    }
+        $companyId = auth()->user()->Company->id;
+        $driver = Driver_Company::find($id);
 
+        if (!$driver) {
+            return response()->json([
+                'message' => 'Driver not found',
+            ], 404);
+        }
+        if ($driver->company->id != $companyId) {
+            return response()->json([
+                'message' => 'You do not have access to this driver',
+            ], 403);
+        }
+        $data = [
+            'id' => $driver->id,
+            'name' => $driver->user->name,
+            'email' => $driver->user->email,
+            'phone' => $driver->user->phone,
+            'status' => $driver->status,
+        ];
+
+        return response()->json($data);
+    }
     /**
      * Show the form for editing the specified resource.
      */
@@ -419,6 +439,37 @@ class DriverCompanyController extends Controller
         }
 
         return response()->json($bookingData);
+    }
+
+    public function trip_driver($id)
+    {
+        $driver = Driver_Company::find($id);
+        $companyId = $driver->company->id;
+        $bus_id = $driver->bus->id;
+        $bustrip = Bus_Trip::where('bus_id', $bus_id)->get();
+        $info = [];
+
+        foreach ($bustrip as $bustrips) {
+            if ($bustrips->comp_trip->company->id == $companyId) {
+                $tickets = Tickt::where('bus__trip_id', $bustrips->id)
+                    ->where('status', 'complete')
+                    ->get();
+                $total_profit = $tickets->sum('price');
+                $data[] = [
+                    'from' => $bustrips->comp_trip->from,
+                    'to' => $bustrips->comp_trip->to,
+                    'start_time' => $bustrips->comp_trip->start_time,
+                    'end_time' => $bustrips->comp_trip->end_time,
+                    'price' => $bustrips->comp_trip->price,
+                    'type' => $bustrips->comp_trip->type,
+                    'status_trip' => $bustrips->comp_trip->status,
+                    'status_bus_trip' => $bustrips->status,
+                    'total_profit' => $total_profit
+                ];
+                $info[] = $data;
+            }
+        }
+        return response()->json($info);
     }
 
 }
