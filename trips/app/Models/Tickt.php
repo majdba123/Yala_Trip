@@ -26,6 +26,6 @@ class Tickt extends Model
 
     public function Bus_Trip()
     {
-        return $this->belongsTo(Bus_Trip::class,'comp_trip_id');
+        return $this->belongsTo(Bus_Trip::class,'bus__trip_id');
     }
 }

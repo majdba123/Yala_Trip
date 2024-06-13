@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Private_trip;
 use App\Models\Order_private;
+use App\Models\Tickt;
+use App\Models\user_subscription;
+
+
 
 class UserApiController extends Controller
 {
@@ -160,6 +164,21 @@ class UserApiController extends Controller
         }
         // Return the JSON response
         return response()->json($response);
+    }
+
+    public function history_unversity()
+    {
+        $user_id = auth()->user()->id; // Get the current user's ID
+        $tickets = Tickt::where('user_id', $user_id)->get(); // Retrieve all tickets associated with the current user
+        $tickets->load('Bus_Trip.comp_trip' , 'Bus_Trip.bus'); // Load the Bus_Trip relationship and its nested comp_trip relationship
+        return response()->json($tickets);
+    }
+
+    public function subscription()
+    {
+        $user_id = auth()->user()->id; // Get the current user's ID
+        $subscriptions = user_subscription::where('user_id', $user_id)->with('subscriptions')->get(); // Retrieve all subscriptions associated with the current user
+        return response()->json($subscriptions);
     }
 
 }

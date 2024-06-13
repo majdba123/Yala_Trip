@@ -23,6 +23,8 @@ use App\Http\Controllers\RateComapnyController;
 use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\UserSubscriptionController;
 
+use App\Http\Controllers\AdminController;
+
 
 
 
@@ -170,7 +172,9 @@ Route::group(['prefix' => 'user' , 'middleware' => ['use','auth:sanctum']], func
     Route::post('/rate_company/{id}', [RateComapnyController::class, 'store']);
 
 
+    Route::get('/history_trip_unversity', [UserApiController::class, 'history_unversity']);
 
+    Route::get('/all_subscription', [UserApiController::class, 'subscription']);
 
 });
 
@@ -188,6 +192,37 @@ Route::group(['prefix' => 'admin' , 'middleware' => ['checkAdmi','auth:sanctum']
     Route::put('/break_update/{id}', [BreakingController::class, 'update']);
     Route::delete('/break_delete/{id}', [BreakingController::class, 'destroy']);
     Route::get('/all_break', [BreakingController::class, 'index']);
+
+    Route::get('/all_user', [AdminController::class, 'all_user']);
+    Route::post('/this_user/{id}', [AdminController::class, 'show_user']);
+    Route::delete('/block_user/{id}', [AdminController::class, 'block_user']);
+
+    Route::get('/all_company', [AdminController::class, 'all_company']);
+    Route::post('/show_company/{id}', [AdminController::class, 'company_info']);
+    Route::delete('/delete_company/{id}', [AdminController::class, 'delete_company']);
+
+
+    Route::get('/all_driver', [AdminController::class, 'all_driver']);
+    Route::post('/show_driver/{id}', [AdminController::class, 'driver_info']);
+    Route::delete('/delete_driver/{id}', [AdminController::class, 'delete_driver']);
+
+    Route::get('/all_trip', [AdminController::class, 'all_trip']);
+    Route::post('/show_trip/{id}', [AdminController::class, 'trip_info']);
+
+
+    Route::get('/all_reservation', [AdminController::class, 'all_reservation']);
+    Route::post('/show_reservation/{id}', [AdminController::class, 'reservation_info']);
+
+    Route::get('/all_private_trip', [AdminController::class, 'all_private_trip']);
+    Route::post('/show_private_trip/{id}', [AdminController::class, 'private_trip_info']);
+
+    Route::get('/all_contact_as', [AdminController::class, 'contuct_as']);
+    Route::post('/change_status_contuct/{id}', [AdminController::class, 'change_status_contuct']);
+
+
+
+
+
 
 });
 
@@ -261,7 +296,7 @@ Route::group(['prefix' => 'driver_company' , 'middleware' => ['driv_comp','auth:
     Route::get('/my_profile', [UserApiController::class, 'info']);
     Route::put('/update_profile', [UserApiController::class, 'updateProfile']);
 
-    Route::get('/history_all_trip', [DriverCompanyController::class, 'history']);
+    Route::get('/all_bus_trip', [DriverCompanyController::class, 'all_bus_trip']);
 
 
 });

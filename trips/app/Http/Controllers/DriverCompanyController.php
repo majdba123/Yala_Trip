@@ -471,5 +471,15 @@ class DriverCompanyController extends Controller
         }
         return response()->json($info);
     }
+    public function all_bus_trip()
+    {
+        $driver = Auth::user()->Driver_Company->id;
+
+        $diver_com = Driver_Company::find($driver);
+
+        $diver_com->load('Bus.Bus_Trip.comp_trip','user'); // Load the relationships
+
+        return response()->json($diver_com);
+    }
 
 }
