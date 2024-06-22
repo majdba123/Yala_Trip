@@ -83,7 +83,7 @@ class AdminController extends Controller
 
             $all_driver = Driver_Company::where('company_id' ,$companiess->id )->count();
             $finished_trip =$companyTrips->count();
-            $panding_trip =$companyTrips->where('status' , 'panding')->count();
+            $panding_trip =$companyTrips->where('status' , 'pending')->count();
 
             $num_subscription = Company::find($companiess->id)->Subscriptions;
             $count_active = 0;
@@ -159,7 +159,7 @@ class AdminController extends Controller
 
         $all_driver = Driver_Company::where('company_id', $company->id)->count();
         $finished_trip = $companyTrips->count();
-        $panding_trip = $companyTrips->where('status', 'panding')->count();
+        $panding_trip = $companyTrips->where('status', 'pending')->count();
 
         $num_subscription = $company->Subscriptions;
         $count_active = 0;

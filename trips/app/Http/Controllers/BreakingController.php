@@ -33,8 +33,11 @@ class BreakingController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'sorted' => 'required',
-            'name' => 'required',
+            'sorted' => 'required|in:asc,desc',
+            'name' => 'required|string|max:255',
+        ], [
+            'sorted.in' => 'Invalid sorted direction. Please use asc or desc.',
+            'name.max' => 'Name cannot be longer than 255 characters.',
         ]);
         if ($validator->fails()) {
             $errors = $validator->errors()->first();
@@ -75,8 +78,8 @@ class BreakingController extends Controller
             return response()->json(['error' => 'Breaking not found'], 404);
         }
         $validator = Validator::make($request->all(), [
-            'sorted' => 'nullable',
-            'name' => 'nullable',
+            'sorted' => 'sometimes|nullable',
+            'name' => 'sometimes|nullable',
         ]);
         if ($validator->fails()) {
             $errors = $validator->errors()->first();

@@ -109,7 +109,7 @@ class DriverController extends Controller
         $reservation = Reservation::find($id);
 
         // Check if the reservation exists and its status is 'pending'
-        if (!$reservation || $reservation->status !== 'panding') {
+        if (!$reservation || $reservation->status !== 'pending') {
             return response()->json(['message' => 'Invalid reservation'], 400);
         }
 
@@ -125,14 +125,14 @@ class DriverController extends Controller
 
         // Get the total number of 'pending' and 'complete' reservations for the trip
         $totalReservations = Reservation::where('trip_id', $tripId)
-                                         ->whereIn('status', ['panding', 'complete'])
+                                         ->whereIn('status', ['pending', 'complete'])
                                          ->sum('num_passenger');
 
         $TRIP=Trip::find($tripId);
         // If the total number of reservations is equal to the number of passengers,
         // change the trip status to 'pending'
         if ($totalReservations < $numPassengers) {
-            $TRIP->status = 'panding';
+            $TRIP->status = 'pending';
             $TRIP->save();
         }
 
@@ -221,14 +221,14 @@ class DriverController extends Controller
             $numPassengers = Trip::find($tripId)->num_passenger;
             // Get the total number of 'pending' and 'complete' reservations for the trip
             $totalReservations = Reservation::where('trip_id', $tripId)
-                                             ->whereIn('status', ['panding', 'complete'])
+                                             ->whereIn('status', ['pending', 'complete'])
                                              ->sum('num_passenger');
 
             $TRIP=Trip::find($tripId);
             // If the total number of reservations is equal to the number of passengers,
             // change the trip status to 'pending'
             if ($totalReservations < $numPassengers) {
-                $TRIP->status = 'panding';
+                $TRIP->status = 'pending';
                 $TRIP->save();
             }
             // Return the updated reservation
@@ -253,14 +253,14 @@ class DriverController extends Controller
 
         // Get all reservations for this trip with a status of 'completed' or 'pending'
         $reservations = Reservation::where('trip_id', $id)
-                                   ->whereIn('status', ['complete', 'panding'])
+                                   ->whereIn('status', ['complete', 'pending'])
                                    ->get();
 
         // Set the status of each reservation to 'finished' or 'out'
         foreach ($reservations as $reservation) {
             if ($reservation->status === 'complete') {
                 $reservation->status = 'finished';
-            } elseif ($reservation->status === 'panding') {
+            } elseif ($reservation->status === 'pending') {
                 $reservation->status = 'out';
             }
             $reservation->save();
@@ -329,7 +329,7 @@ class DriverController extends Controller
         // Get the reservations for the given trip_id and break_id
         $reservations = Reservation::where('trip_id', $id)
                                    ->where('breaking_id', $request->input('break_id'))
-                                   ->where('status', 'panding')
+                                   ->where('status', 'pending')
                                    ->get();
 
         // Initialize an empty array to store the custom JSON response

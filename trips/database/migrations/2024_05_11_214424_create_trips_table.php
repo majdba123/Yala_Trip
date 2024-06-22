@@ -13,11 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('trips', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(Path::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(Driver::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('num_passenger');
-            $table->string('status')->default('pandding');
+            $table->integer('num_passenger');
+            $table->string('status')->default('pending');
 
             $table->timestamps();
         });

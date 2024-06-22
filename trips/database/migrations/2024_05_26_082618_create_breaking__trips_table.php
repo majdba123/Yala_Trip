@@ -13,10 +13,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('breaking__trips', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(breaking::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(Trip::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('panding');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

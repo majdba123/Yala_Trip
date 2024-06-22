@@ -13,11 +13,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('type');
-            $table->string('price');
-
+            $table->string('type',40);
+            $table->decimal('price', 10, 2); // changed to decimal type for precise monetary values
             $table->timestamps();
         });
     }

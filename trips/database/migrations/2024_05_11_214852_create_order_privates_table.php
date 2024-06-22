@@ -13,11 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('order_privates', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(Driver::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(Private_trip::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('panding');
-            $table->string('price');
+            $table->string('status')->default('pending');
+            $table->decimal('price', 10, 2); // changed to decimal type for precise monetary values
 
 
             $table->timestamps();

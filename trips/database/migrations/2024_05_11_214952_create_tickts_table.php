@@ -13,12 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tickts', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('num_passenger');
-            $table->string('status')->default('panding');
+            $table->integer('num_passenger');
+            $table->string('status')->default('pending');
             $table->string('type')->default('0');
-            $table->string('price');
+            $table->decimal('price', 10, 2); // changed to decimal type for precise monetary values
 
             $table->timestamps();
         });

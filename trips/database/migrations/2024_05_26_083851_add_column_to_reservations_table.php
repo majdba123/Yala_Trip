@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->foreignId('breaking_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();        });
+            $table->foreignIdFor(breaking::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+
+            });
     }
 
     /**

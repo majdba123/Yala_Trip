@@ -14,10 +14,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('buses', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();            $table->string('number');
-            $table->string('num_passenger');
-            $table->string('status')->default('panding');
+            $table->integer('num_passenger');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

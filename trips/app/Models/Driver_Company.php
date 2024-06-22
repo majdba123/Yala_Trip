@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 class Driver_Company extends Model
 {
     use HasFactory;
@@ -14,6 +15,9 @@ class Driver_Company extends Model
         'status',
 
     ];
+
+    protected $keyType = 'string'; // Set the key type to UUID
+    public $incrementing = false; // Disable auto-incrementing
 
     public function user()
     {
@@ -26,5 +30,12 @@ class Driver_Company extends Model
     public function Bus()
     {
         return $this->hasOne(Bus::class);
+    }
+    public static function boot() {
+        parent::boot();
+        // Auto generate UUID when creating data User
+        static::creating(function ($model) {
+            $model->id = Str::uuid();
+        });
     }
 }

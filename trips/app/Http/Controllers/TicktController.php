@@ -60,7 +60,7 @@ class TicktController extends Controller
         // Get all tickets with same type and bus_trip_id
         $tickets = Tickt::where('type', $requestedType)
             ->where('bus__trip_id', $busTripId)
-            ->where('status',  ['panding' , 'complete'])
+            ->where('status',  ['pending' , 'complete'])
             ->get();
         // Calculate the total number of passengers for the same type and bus_trip_id
         $totalNumPassenger = $tickets->sum('num_passenger') ?? 0;
@@ -120,7 +120,7 @@ class TicktController extends Controller
             $ticket->save();
 
             $updatedTotalNumPassenger = Tickt::where('bus__trip_id', $busTripId)
-            ->where('status', ['panding' , 'complete'])
+            ->where('status', ['pending' , 'complete'])
             ->sum('num_passenger');
 
             $companyTripType = Bus_Trip::find($busTripId)->comp_trip->type;
@@ -150,7 +150,7 @@ class TicktController extends Controller
                 'bus_trip_id' => $busTripId,
                 'num_passenger' =>  $ticket->num_passenger,
                 'price' =>  $ticket->price,
-                'status' =>  $ticket->status ?: 'panding',
+                'status' =>  $ticket->status ?: 'pending',
                 'type' =>  $ticket->type,
             ];
 

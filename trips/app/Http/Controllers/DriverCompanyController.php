@@ -155,7 +155,7 @@ class DriverCompanyController extends Controller
         foreach ($buses as $bus) {
             $busId = $bus->id;
             $pendingTrips = Bus_Trip::where('bus_id', $busId)
-                ->where('status', 'panding')
+                ->where('status', 'pending')
                 ->with('comp_trip') // Eager load the comp_trip relationship
                 ->get();
 
@@ -201,7 +201,7 @@ class DriverCompanyController extends Controller
         }
 
         $tickets = Tickt::where('bus__trip_id', $bus_trip_id)
-        ->where('status', 'panding')
+        ->where('status', 'pending')
         ->get();
         if ($request->input('type') == 0) {
             $tickets = $tickets->where('type', 0);
@@ -244,7 +244,7 @@ class DriverCompanyController extends Controller
         if (!$ticket) {
             return response()->json(['error' => 'Ticket not found'], 404);
         }
-        if ($ticket->status !== 'panding') {
+        if ($ticket->status !== 'pending') {
             return response()->json(['error' => 'Your ticket has expired'], 400);
         }
 
@@ -287,7 +287,7 @@ class DriverCompanyController extends Controller
 
         // Get all tickets by bus ID and status "pending"
         $tickets = Tickt::where('bus__trip_id', $bus_trip_id)
-            ->where('status', 'panding')
+            ->where('status', 'pending')
             ->where('type', 0)
             ->get();
             // Change the status of each ticket to "out"
@@ -342,7 +342,7 @@ class DriverCompanyController extends Controller
 
         // Get all tickets by bus ID and status "pending"
         $tickets = Tickt::where('bus__trip_id', $bus_trip_id)
-            ->where('status', 'panding')
+            ->where('status', 'pending')
             ->where('type', 1)
             ->get();
             // Change the status of each ticket to "out"

@@ -17,7 +17,7 @@ class CompTripController extends Controller
      */
     public function index(Request $request)
     {
-        $compTripsQuery = Comp_trip::where('status', 'panding')
+        $compTripsQuery = Comp_trip::where('status', 'pending')
             ->with(['Bus_Trip' => function ($query) {
             $query->whereNotIn('status', ['complete', 'finished']);
         }]);
@@ -236,7 +236,7 @@ class CompTripController extends Controller
                     ]);
                 }else{
                     return response()->json([
-                        'message' => 'driver can not update because the driver panding',
+                        'message' => 'driver can not update because the driver pending',
                     ]);
                 }
             }

@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('paths', function (Blueprint $table) {
-            $table->id();
-            $table->string('from')->default('nul');
-            $table->string('to')->default('nul');
-            $table->string('city')->default('nul');
-            $table->string('price')->default('nul');
+            $table->uuid('id')->primary();
+            $table->string('from', 100); // increased length to 100 characters
+            $table->string('to', 100); // increased length to 100 characters
+            $table->string('city', 50); // assuming 50 characters for the city
+            $table->decimal('price', 10, 2); // changed to decimal type for precise monetary values
             $table->timestamps();
         });
     }

@@ -16,7 +16,7 @@ class PrivateTripController extends Controller
     public function driver_order()
     {
         // Retrieve all private trips with a pending status
-        $private_trips = Private_trip::where('status', 'panding')->get();
+        $private_trips = Private_trip::where('status', 'pending')->get();
         // Format the private trip data
         $tripData = [];
         foreach ($private_trips as $private_trip) {

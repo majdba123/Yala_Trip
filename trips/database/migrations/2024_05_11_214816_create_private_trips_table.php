@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('private_trips', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('panding');
-            $table->string('from');
-            $table->string('to');
-            $table->string('date');
-            $table->string('time');
+            $table->string('status')->default('pending');
+            $table->string('from' , 40);
+            $table->string('to' , 40);
+            $table->date('date');
+            $table->time('time');
             $table->timestamps();
         });
     }

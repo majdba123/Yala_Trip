@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('drivers', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('model_car')->default('nul');
-            $table->string('number_car')->default('00000000000');
-            $table->string('color_car')->default('null');
-
+            $table->string('model_car')->nullable()->default(null);
+            $table->string('number_car', 12)->nullable()->default(null)->unique(); // assuming 12 characters for the car number
+            $table->string('color_car')->nullable()->default(null);
             $table->timestamps();
         });
     }

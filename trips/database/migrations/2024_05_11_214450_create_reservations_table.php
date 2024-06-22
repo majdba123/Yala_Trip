@@ -14,13 +14,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reservations', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(Trip::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('panding');
-            $table->string('price');
-            $table->string('num_passenger');
-
+            $table->string('status')->default('pending');
+            $table->decimal('price', 10, 2); // changed to decimal type for precise monetary values
+            $table->integer('num_passenger');
             $table->timestamps();
         });
     }

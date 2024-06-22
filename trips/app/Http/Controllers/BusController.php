@@ -60,9 +60,9 @@ class BusController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'number' => 'required|integer',
-            'num_passenger' => 'required|integer',
-            'driver__company_id' => 'required|integer',
+            'number' => 'integer|digits_between:1,10|unique:cars,number',
+            'num_passenger' => 'integer|digits_between:1,10',
+            'driver__company_id' => 'integer|exists:drivers,company_id',
         ]);
         if ($validator->fails()) {
             $errors = $validator->errors()->first();
@@ -81,8 +81,8 @@ class BusController extends Controller
             return response()->json(['error' => 'Driver company does not belong to the same company'], 403);
         }
 
-        if ($driverCompany->status != 'panding') {
-            return response()->json(['error' => 'Driver company status is not panding'], 403);
+        if ($driverCompany->status != 'pending') {
+            return response()->json(['error' => 'Driver company status is not pending'], 403);
         }
 
 
@@ -134,9 +134,9 @@ class BusController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'number' => 'integer',
-            'num_passenger' => 'integer',
-            'driver__company_id' => 'integer',
+            'number' => 'sometimes|integer',
+            'num_passenger' => 'sometimes|integer',
+            'driver__company_id' => 'sometimes|integer|exists:drivers,company_id',
         ]);
         if ($validator->fails()) {
             $errors = $validator->errors()->first();
@@ -157,8 +157,8 @@ class BusController extends Controller
                 if (!$driverCompany) {
                     return response()->json(['error' => 'Driver company not found'], 404);
                 }
-                if ($driverCompany->status!= 'panding') {
-                    return response()->json(['error' => 'Driver company status is not panding'], 403);
+                if ($driverCompany->status!= 'pending') {
+                    return response()->json(['error' => 'Driver company status is not pending'], 403);
                 }
                 if ($driverCompany->company_id!= $company) {
                     return response()->json(['error' => 'Driver company does not belong to the same company'], 403);
@@ -190,7 +190,7 @@ class BusController extends Controller
         if ($bus && $bus->company_id == $company) {
             $driver = $bus->Driver_company;
             // Update the driver status to 'pending'
-            $driver->status = 'panding';
+            $driver->status = 'pending';
             $driver->save();
             $bus->delete();
             return response()->json([

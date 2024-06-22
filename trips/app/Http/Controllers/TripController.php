@@ -19,12 +19,12 @@ class TripController extends Controller
     public function index_trip($id)
     {
         $trips = Trip::where('path_id', $id)
-            ->where('status', 'panding')
+            ->where('status', 'pending')
             ->get();
         $tripData = [];
         foreach ($trips as $trip) {
             $trips = Reservation::where('trip_id', $trip->id)
-            ->where('status', 'panding')
+            ->where('status', 'pending')
             ->sum('num_passenger');
 
             if ($trips > 0) {
@@ -92,7 +92,7 @@ class TripController extends Controller
 
         if ($existingTrip) {
         // If a trip already exists, return an error message
-        return response()->json(['error' => 'driver already panding'], 409);
+        return response()->json(['error' => 'driver already pending'], 409);
         }
 
         $trip = new Trip();

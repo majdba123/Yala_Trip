@@ -63,7 +63,7 @@ class ReservationController extends Controller
         // Get the status parameter from the request
         $status = $request->input('status');
         // Define a list of valid status values
-        $validStatusValues = ['complete', 'out', 'finished', 'panding'];
+        $validStatusValues = ['complete', 'out', 'finished', 'pending'];
         // Check that the status parameter is valid
         if (!in_array($status, $validStatusValues)) {
             // Return an error response if the status parameter is invalid
@@ -119,7 +119,7 @@ class ReservationController extends Controller
 
 
         $reservation = Reservation::where('trip_id', $id)
-        ->where('status', 'panding')
+        ->where('status', 'pending')
         ->sum('num_passenger');
 
 
@@ -156,7 +156,7 @@ class ReservationController extends Controller
 
 
         $reservation1 = Reservation::where('trip_id', $id)
-        ->where('status', 'panding')
+        ->where('status', 'pending')
         ->sum('num_passenger');
 
 
@@ -180,7 +180,7 @@ class ReservationController extends Controller
             'user' => $booking->user->name,
             'num_passenger' =>  $booking->num_passenger,
             'price' =>  $booking->price,
-            'status' =>  $booking->status ?: 'panding',
+            'status' =>  $booking->status ?: 'pending',
         ];
         if ($booking->breaking_id) {
             $data['breaking_id'] = $booking->break->name;

@@ -13,12 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contuct_uses', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('comment');
             $table->string('email');
-            $table->string('status')->default('panding');
-
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

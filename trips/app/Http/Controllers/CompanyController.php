@@ -197,7 +197,7 @@ class CompanyController extends Controller
 
         $all_driver = Driver_Company::where('company_id' ,$companyId )->count();
         $finished_trip =$companyTrips->count();
-        $panding_trip =$companyTrips->where('status' , 'panding')->count();
+        $panding_trip =$companyTrips->where('status' , 'pending')->count();
 
         $num_subscription = Company::find($companyId)->Subscriptions;
         $count_active = 0;

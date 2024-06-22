@@ -13,12 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_subscriptions', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(Subscriptions::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('date_start');
-            $table->string('end_date');
-            $table->string('status')->default('panding');
+            $table->date('date_start');
+            $table->date('end_date');
+            $table->string('status')->default('pending');
 
             $table->timestamps();
         });

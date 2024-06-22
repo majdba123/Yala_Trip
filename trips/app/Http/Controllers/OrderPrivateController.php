@@ -93,7 +93,7 @@ class OrderPrivateController extends Controller
         $order_private->save();
 
         // Update the status of all associated Order_private records to "out"
-        $order_privates = Order_private::where('private_trip_id', $private_trip->id)->where('status', 'panding')->get();
+        $order_privates = Order_private::where('private_trip_id', $private_trip->id)->where('status', 'pending')->get();
         foreach ($order_privates as $order_private) {
             $order_private->status = 'out';
             $order_private->save();

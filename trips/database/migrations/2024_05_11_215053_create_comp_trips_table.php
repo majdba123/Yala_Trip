@@ -13,14 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('comp_trips', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('from');
             $table->string('to');
-            $table->string('start_time');
-            $table->string('end_time');
-            $table->string('price');
-            $table->string('status')->default('panding');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->decimal('price', 10, 2); // changed to decimal type for precise monetary values
+            $table->string('status')->default('pending');
             $table->string('type')->default('0');
             $table->timestamps();
         });

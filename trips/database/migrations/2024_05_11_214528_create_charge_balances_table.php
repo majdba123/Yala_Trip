@@ -12,11 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('charge_balances', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('status')->default('panding');
-            $table->string('balance');
-            $table->string('imge')->default('null');
+            $table->string('status')->default('pending');
+            $table->decimal('balance', 10, 2); // changed to decimal type for precise monetary values            $table->string('imge')->default('null');
             $table->timestamps();
         });
     }
